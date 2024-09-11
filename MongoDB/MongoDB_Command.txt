@@ -1,0 +1,516 @@
+Open CMD Prompt : 
+1. type mongosh
+2. test> type show dbs
+
+//Creating Database : 
+    Command : use databaseName => (eg. use college) 
+    [note : here we create college database.]
+    switched to db college
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+//Creating Collection inside Database :
+    Command : db.createCollection('collectionName') => (eg. db.createCollection('student')) 
+    [note : here we create collection student inside college database]
+    show collections : Command use to display collections inside database.
+
+    Collections are two types :
+    1. capped : limited numbers of data.
+    2. uncapped : unlimited numbers of data.
+
+    Note : by default collection is uncapped.
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+//Inserting Document/Record in Collection :
+    Command : db.user.insert({name:"ABC",age:24,bg: 'a+'}); => For single insert/entity
+    Command : db.collectionName.insertMany([data]);
+    
+    => eg. db.student.insertMany([
+    {
+		name :"Aman",
+		age: 24,
+        gender:"male",
+        rollno:101,
+        branch:"IT",
+        CGPA:8.2,
+        graduated:true,
+        feePaid:true,
+        year:2020,
+        email:"aman24@gmail.com",
+        hobby:"cricket",
+    }
+]);
+
+[note : here we inserted student data in 'student collection' and we use insertMany to insert multiple data at a time]
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+//Fetching / Select Data from Collection : 
+    
+1.    Command : db.collectionName.find(); =>(eg. db.student.find();)
+
+    {
+        _id: ObjectId('667b00d3da507cd2ac90defe'),
+        name: 'Aman',
+        age: 24,
+        gender: 'male',
+        rollno: 101,
+        branch: 'IT',
+        CGPA: 8.2,
+        graduated: true,
+        feePaid: true,
+        year: 2020,
+        email: 'aman24@gmail.com',
+        hobby: 'cricket'
+    }
+
+    [note : here we Fetched data from collection]
+
+2.  Command : db.student.find({}, {_id:0});     [in this Command first {} = where condition, second {} = Projection]
+        [note: by using thid Command we get data except its ObjectId('xxxxxxxxx')]
+        {
+        
+            name: 'Aman',
+            age: 24,
+            gender: 'male',
+            rollno: 101,
+            branch: 'IT',
+            CGPA: 8.2,
+            graduated: true,
+            feePaid: true,
+            year: 2020,
+            email: 'aman24@gmail.com',
+            hobby: 'cricket'
+        }
+3.  Command : db.student.find({}, {name:1, age:1, rollno:1, _id:0});
+        [note : by using this Command w can access/fetch/select only data which are passed/mention inside the second {}]
+
+        { name: 'Aman', age: 24, rollno: 101 },
+
+#Some Commands for Fetching Records :
+    1. Fetch Particular record -
+        db.student.find({name: "name"});
+        Result :
+        [
+            {
+                _id: ObjectId('667b00d3da507cd2ac90defe'),
+                name: 'Aman',
+                age: 24,
+                gender: 'male',
+                rollno: 101,
+                branch: 'IT',
+                CGPA: 8.2,
+                graduated: true,
+                feePaid: true,
+                year: 2020,
+                email: 'aman24@gmail.com',
+                hobby: 'cricket',
+                grade: 'A+',
+                level: 'junior'
+            }
+        ]
+
+    2. Fetch Particular field in one document -
+        db.student.find({name: "name"}, {name: 1, fees:1});
+        Result :
+        [
+            {
+                _id: ObjectId('667b00d3da507cd2ac90defe'),
+                name: 'Aman',
+                feePaid: true
+            }
+        ]
+
+    3. db.student.find({feePaid:true}).limit(2);
+        Result : only two Records will be displayed with feePaid:true.
+
+    4. db.student.findOne({feePaid:true});
+        Result : only one Records will be displayed with feePaid:true.
+
+    5. Display Record except First record -
+        db.student.find({feePaid:true}).limit(1).skip(1);
+        Result : it will display Records except first with feePaid:true.
+
+    
+------------------------------------------------------------------------------------------------------------------------------------------
+
+//Count Records / Data in the Collection :
+    Command : db.collectionName.find().count();   =>  [eg. db.student.find().count();]
+
+    [note : by using this command we can find number of Records/Data in the Collection. It will return an integer/number of Records.]
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+
+//Filtering Record :
+    $gt(>) = Greater than,
+        Command : db.student.find({age:{$gt:23}}, {_id:0});
+    
+    $lt(<) = Less than, 
+        Command : db.student.find({age:{$lt:23}}, {_id:0});
+    
+    $gte(>=) = Greater than equas to, 
+        Command : db.student.find({age:{$gte:23}}, {_id:0});
+    
+    $lte(<=) = Less than equas to, 
+        Command : db.student.find({age:{$lte:23}}, {_id:0});
+    
+    $eq(=) = Equas to,
+        Command : db.student.find({age:{$eq:23}}, {_id:0});
+    
+    $ne(!=) = Not equas to,
+        Command : db.student.find({age:{$ne:23}}, {_id:0});
+
+    
+    $and = Array for multiple condition. $and performs a logical AND operation on an array of one or more expressions (<expression1>, <expression2>, and so on) and selects the documents that satisfy all the expressions. MongoDB provides an implicit AND operation when specifying a comma separated list of expressions.
+
+    syntax : { $and: [ { <expression1> }, { <expression2> } , ... , { <expressionN> } ] }
+
+    
+    Command : db.student.find({$and:[{age:{$gt:23}}, {age:{$lt:28}}]});
+        [note : by using this Command we get data of age b/w Greater than 23 and less than 28]
+
+    
+    $or = The $or operator performs a logical OR operation on an array of one or more <expressions> and selects the documents that satisfy at least one of the <expressions>.
+
+    syntax : { $or: [ { <expression1> }, { <expression2> }, ... , { <expressionN> } ] }
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+//Sorting Order : 
+
+    To Sort in Ascending Order -
+    Command : db.collectionName.find({}, {_id:0}).sort({age:1});
+
+    To Sort in Descending Order -
+    Command : db.collectionName.find({}, {_id:0}).sort({age:-1});
+
+    To Sort First 3 Data with age in Ascending Order -
+    Command : db.collectionName.find({}, {_id:0}).sort({age:1}).limit(3);
+
+    To Sort First 3 Data with age in Descending Order -
+    Command : db.collectionName.find({}, {_id:0}).sort({age:-1}).limit(3);
+
+    To Sort Highest age value -
+    1.  Command : db.collectionName.find({}, {_id:0}).sort({age:-1}).limit(-1).toArray()[0].age;
+
+    2.  Command : db.collectionName.find({age: db.collectionName.find().sort({age:-1}).toArray()[0].age});
+
+    To Sort Second Highest age value -
+    Command : db.collectionName.find({age:{$lt:db.collectionName.find().sort({age:-1}).toArray()[0].age}}).sort({age:-1}).toArray()[0].age
+
+    To Sort Lowest age value -
+    Command : db.collectionName.find({}, {_id:0}).sort({age:1}).limit(1).toArray()[0].age;
+
+    To Sort Second Lowest age value -
+    Command : db.collectionName.find({age:{$gt:db.collectionName.find().sort({age:1}).toArray()[0].age}}).sort({age:1}).toArray()[0].age
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+//Delete / Remove Record :
+    Command : db.collectionName.remove({_id:ObjectId('xxxxxxxx')})
+
+    {acknowledged : true, deleteCount : 1}
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+//Set and Unset Data :
+    $Set => command : db.collectionName.update({}, {$set:{updateData}}, {multi:true});
+
+        => (eg. db.student.update({}, {$set:{grade:"A+"}}, {multi:true});)
+        [note : this command Set new field grade or the field will be updated/added by grade:"A+" in the collection.]
+    We will get in return -
+    {
+        acknowledged: true,
+        insertedId: null,
+        matchedCount: number of data/Records in collection,
+        modifiedCount: number of data/Records updated in collection,
+        upsertedCount: 0
+    }
+
+    $Unset => command : db.collectionName.update({}, {$unset:{updateData}}, {multi:true});
+        => (eg. db.student.update({}, {$unset:{grade:"A+"}}, {multi:true});)
+        [note : this command Unset field grade or the field will be updated/removed by grade:"A+" in the collection.]
+    We will get in return -
+    {
+        acknowledged: true,
+        insertedId: null,
+        matchedCount: number of data/Records in collection,
+        modifiedCount: number of data/Records updated in collection,
+        upsertedCount: 0
+    }
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+//Update Database :
+
+    db.collectionName.updateOne(<filter>, <update>)
+
+    1.  command : db.collectionName.update({age:{$gt:25}}, {$set:{updateData}}, {multi:true});
+
+
+    (eg.    db.student.update({age:{$gt:25}}, {$set:{level:"senior"}}, {multi:true});  )
+
+    {
+        _id: ObjectId('667b00d3da507cd2ac90df06'),
+        name: 'Jagan',
+        age: 28,
+        gender: 'male',
+        rollno: 109,
+        branch: 'MSC',
+        CGPA: 7.9,
+        graduated: true,
+        feePaid: false,
+        year: 2021,
+        email: 'jagan28@gmail.com',
+        hobby: 'swimming',
+        grade: 'A+',
+        level: 'senior' 
+    }
+
+    [note : in this example we can see that we updated or created new field (level) with update command that age Greater than 25 has update with level : senior]
+
+    2.  command : db.collectionName.update({age:{$lte:25}}, {$set:{updateData}}, {multi:true});
+
+    (eg.    db.student.update({age:{$lte:25}}, {$set:{level:"junior"}}, {multi:true});  )
+
+    {
+        _id: ObjectId('667b00d3da507cd2ac90df04'),
+        name: 'Palak',
+        age: 23,
+        gender: 'female',
+        rollno: 107,
+        branch: 'MCA',
+        CGPA: 8.9,
+        graduated: true,
+        feePaid: false,
+        year: 2017,
+        email: 'palak23@gmail.com',
+        hobby: 'painting',
+        grade: 'A+',
+        level: 'junior'
+    }
+
+    [note : in this example we can see that we updated or created new field (level) with update command that age Less than equas to 25 has update with level : junior]
+#Some more update() Commands :
+    1. How to update one Particular field in one document -
+        db.student.updateOne({name:"abc"},{$set:{contact:9874563210}});
+        [It will update or add new field 'contact' in document which is filtered by name:"abc" field.]
+
+    2. How to update one Particular field in two or more document -  
+        db.student.updateMany({name:"abc"}, {$set:{feePaid:false}});
+        [It will update fields 'feePaid' in document which is filtered by name:"abc" field]
+    
+    3. How to update more than one field in one document -
+        db.student.updateOne({name:"abc"}, {$set:{grade: "A+", feePaid:true}});
+        [It will update or add new field (grade:"A+") and (feePaid:true) in document wich is filtered by (name:"abc") field.]
+
+    4. How to update more than one field in two or more document -
+        db.stu.updateMany({feePaid:false}, {$set:{grade:"A", feePaid:true}});
+        [It will update or add new field (grade:"A") and (feePaid:true) in many document wich is filtered by (feePaid:false) field.]
+
+    
+------------------------------------------------------------------------------------------------------------------------------------------
+
+// Aggregation Pipeline : 
+    An aggregation pipeline consists of one or more stages that process documents: 
+        => Each stage performs an operation on the input documents. For example, a stage can filter documents, group documents, and      calculate values. 
+        =>   The documents that are output from a stage are passed to the next stage. 
+        =>   An aggregation pipeline can return results for groups of documents. For example, return the total, average, maximum, and minimum values. 
+        
+        You can update documents with an aggregation pipeline if you use the stages shown in Updates with Aggregation Pipeline.
+
+    #Complete Aggregation Pipeline Examples :
+        This section shows aggregation pipeline examples that use the following pizza orders collection:
+
+        db.orders.insertMany( [
+                { _id: 0, name: "Pepperoni", size: "small", price: 19,
+                    quantity: 10, date: ISODate( "2021-03-13T08:14:30Z" ) },
+                { _id: 1, name: "Pepperoni", size: "medium", price: 20,
+                    quantity: 20, date : ISODate( "2021-03-13T09:13:24Z" ) },
+                { _id: 2, name: "Pepperoni", size: "large", price: 21,
+                    quantity: 30, date : ISODate( "2021-03-17T09:22:12Z" ) },
+                { _id: 3, name: "Cheese", size: "small", price: 12,
+                    quantity: 15, date : ISODate( "2021-03-13T11:21:39.736Z" ) },
+                { _id: 4, name: "Cheese", size: "medium", price: 13,
+                    quantity:50, date : ISODate( "2022-01-12T21:23:13.331Z" ) },
+                { _id: 5, name: "Cheese", size: "large", price: 14,
+                    quantity: 10, date : ISODate( "2022-01-12T05:08:13Z" ) },
+                { _id: 6, name: "Vegan", size: "small", price: 17,
+                    quantity: 10, date : ISODate( "2021-01-13T05:08:13Z" ) },
+                { _id: 7, name: "Vegan", size: "medium", price: 18,
+                    quantity: 10, date : ISODate( "2021-01-13T05:10:13Z" ) }
+        ] )
+
+    Calculate Total Order Quantity :
+        The following aggregation pipeline example contains two stages and returns the total order quantity of medium size pizzas grouped by pizza name:
+        db.orders.aggregate([
+
+            // Stage 1: Filter pizza order documents by pizza size
+            {
+                $match: { size: "medium" }
+            },
+
+            // Stage 2: Group remaining documents by pizza name and calculate total quantity
+            {
+                $group: { _id: "$name", totalQuantity: { $sum: "$quantity" } }
+            }
+
+        ])
+
+        The $match stage:
+            . Filters the pizza order documents to pizzas with a size of medium.
+            . Passes the remaining documents to the $group stage.
+
+        The $group stage:
+            . Groups the remaining documents by pizza name.
+            . Uses $sum to calculate the total order quantity for each pizza name. The total is stored in the totalQuantity field  returned by the aggregation pipeline.
+
+        Example output:
+        [
+            { _id: 'Cheese', totalQuantity: 50 },
+            { _id: 'Vegan', totalQuantity: 10 },
+            { _id: 'Pepperoni', totalQuantity: 20 }
+        ]
+
+    Calculate Total Order Value and Average Order Quantity :
+            The following example calculates the total pizza order value and average order quantity between two dates:
+            db.orders.aggregate([
+
+                // Stage 1: Filter pizza order documents by date range
+                {
+                    $match:
+                    {
+                        "date": { $gte: new ISODate( "2020-01-30" ), $lt: new ISODate( "2022-01-30" ) }
+                    }
+                },
+
+                // Stage 2: Group remaining documents by date and calculate results
+                {
+                    $group:
+                    {
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+                        totalOrderValue: { $sum: { $multiply: [ "$price", "$quantity" ] } },
+                        averageOrderQuantity: { $avg: "$quantity" }
+                    }
+                },
+
+                // Stage 3: Sort documents by totalOrderValue in descending order
+                {
+                    $sort: { totalOrderValue: -1 }
+                }
+            ])
+
+        The $match stage:
+        . Filters the pizza order documents to those in a date range specified using $gte and $lt.
+        . Passes the remaining documents to the $group stage.
+
+        The $group stage:
+        . Groups the documents by date using $dateToString.
+        
+        . For each group, calculates:
+            . Total order value using $sum and $multiply.
+            . Average order quantity using $avg.
+
+        . Passes the grouped documents to the $sort stage.
+
+        The $sort stage:
+        . Sorts the documents by the total order value for each group in descending order (-1).
+        . Returns the sorted documents.
+
+        Example output:
+        [
+            { _id: '2022-01-12', totalOrderValue: 790, averageOrderQuantity: 30 },
+            { _id: '2021-03-13', totalOrderValue: 770, averageOrderQuantity: 15 },
+            { _id: '2021-03-17', totalOrderValue: 630, averageOrderQuantity: 30 },
+            { _id: '2021-01-13', totalOrderValue: 350, averageOrderQuantity: 10 }
+        ]
+
+
+//Fetching Data / Records :
+    Command : db.student.aggregate();
+------------------------------------------------------------------------------------------------------------------------------------------
+
+                                        :    Relation between MongoDB Documents     :
+
+1. Embeded Document Model :
+    When we put one document as a sub-document inside another document. In MongoDB the Embedding is a technique to store related data in a single document structure.
+    We can store these types of documents as sub-documents in MongoDB.
+    We can either store them as an Array or JSON Object.
+
+    Ex. One-to-One Relationships with Embedded Documents
+        {
+            studentName: "Aman",
+            id: 101,
+            branch: "IT",
+            permanentAddress:{
+                address:"37/2 kent road",
+                city:"Indore",
+                pincode:452112,
+            }
+        }
+
+
+    Ex. One-to-Many Relationships with Embedded Documents
+        // Student document
+        {
+            StudentName: GeeksA,
+            StudentId: g_f_g_1209,
+            Branch:CSE
+            Address: [
+                {
+                    StudentName: GeeksA,
+                    PermanentAddress: XXXXXXX,
+                    City: Delhi,
+                    PinCode:202333
+                },
+                {
+                    StudentName: GeeksA,
+                    CurrentAddress: XXXXXXX,
+                    City: Mumbai,
+                    PinCode:334509
+                }    
+            ]
+    }
+
+
+2. Reference Document Model :
+    Using or Inserting one document id in another document called Referencing. By storing the id of one document to another document , it can form a Relation.
+
+    We can also perform a one-to-many relationship using the document reference model. In this model, we maintain the documents separately but one document contains the reference of the other documents. 
+    Now we will discuss the one-to-many relationship with embedded documents with the help of an example. Let us considered we have a teacher which teaches in 2 different classes. So, she has three documents:
+    
+    Ex. One-to-Many relationships with the document reference
+
+    // Teacher document
+    {
+        teacherName: Sunita,
+        TeacherId: g_f_g_1209,
+    }
+
+    // Class 1 document
+    {
+        TeacherId: g_f_g_1209,
+        ClassName: GeeksA,
+        ClassId: C_123
+        Studentcount: 23,
+        Subject: "Science",
+    }
+
+    // Class 2 document
+    {
+        TeacherId: g_f_g_1209,
+        ClassId: C_234
+        ClassName: GeeksB,
+        Studentcount: 33,
+        Subject: "Maths",
+    }
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
